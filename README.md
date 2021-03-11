@@ -8,3 +8,5 @@
 2. Strategy
 
 3. Coinbase api (buy - sell)
+
+
