@@ -3,6 +3,7 @@ import sys
 import time
 from threading import Thread
 from websocket import create_connection, WebSocketConnectionClosedException
+from portfolio import Portfolio
 
 
 
@@ -23,6 +24,7 @@ class WebSocket():
 			api_passphrase="",
 			products=None,
 			should_print=True,
+			portfolio=None,
 			*,
 			channels):
 
@@ -33,6 +35,7 @@ class WebSocket():
 		self.products = products
 		self.channels = channels
 		self.should_print = should_print
+		self.portfolio = portfolio
 		self.ws = None
 		self.error = None
 		self.stop = True
@@ -83,7 +86,7 @@ class WebSocket():
 				self.on_error(e)
 			else:
 				self.on_message(msg)
-				self.get_data_from_message(msg)
+				self.update_portfolio_price(msg)
 
 
 	def _disconnect(self):
@@ -114,13 +117,10 @@ class WebSocket():
 		if self.should_print:
 			print(msg)
 
-	def get_data_from_message(self, msg):
-		data = {}
+	def update_portfolio_price(self, msg):
 		if "product_id" and "price" and "time" in msg:
-			data["product_id"] = msg["product_id"]
-			data["price"] = msg["price"]
-			data["time"] = msg["time"]
-		data = data
+			name = msg["product_id"][0:3]
+			portfolio.update_price(name, msg["price"])
 
 	def on_error(self, e, data=None):
 		self.error = e
@@ -140,7 +140,8 @@ class WebSocket():
 		self.thread.start()
 
 if __name__ == '__main__':
-	wsClient = WebSocket(products=["BTC-EUR"], channels=["ticker"])
+	portfolio = Portfolio()
+	wsClient = WebSocket(products=["BTC-EUR"], channels=["ticker"], portfolio=portfolio)
 	wsClient.start()
 	print(wsClient.url, wsClient.products)
 	try:
