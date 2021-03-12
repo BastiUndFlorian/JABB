@@ -27,14 +27,13 @@ def get_historical_data(date_from,date_to):
 
 def run_test_enviroment(hist_data):
     pf = Portfolio()
-    pf.update_price("BTC",46594.16)
-    pf.buy_in_eur("BTC",100)
     for stick in hist_data:
         pf.update_price("BTC",stick[4])
         print(pf.get_portfolio_value())
+    
 
 
-run_test_enviroment(get_historical_data(datetime(2021,3,10),datetime(2021,3,11)))
+run_test_enviroment(get_historical_data(datetime(2021,3,1),datetime(2021,3,11)))
 
 
 #print(get_historical_data(datetime(2021,3,10),datetime(2021,3,11)))

@@ -20,6 +20,9 @@ class Portfolio:
         "LTC":None
     }
 
+    ma50 = 0
+    ma200 = 0
+
     def __init__(self,init_value = 100):
         print("creating portfolio")
 
@@ -60,6 +63,10 @@ class Portfolio:
 
     def update_price(self, name, new_price):
         self.price[name] = new_price
+        self.update_moving_average(new_price)
+        self.run_strategy()
+        print(self.get_assets())
+        print(self.ma200,self.ma50)
         pass
 
     def get_assets(self):
@@ -75,9 +82,27 @@ class Portfolio:
     def get_eur_value(self):
         return self.holding["EUR"]
 
+    def run_strategy(self):
+        
+        if self.ma50 > self.ma200:
+            self.sell_in_asset("BTC",self.holding["BTC"])
+        
+        if self.ma50 < self.ma200:
+            self.buy_in_eur("BTC",self.holding["EUR"])
+        pass
+
+    def update_moving_average(self,price):        
+        #self.ma50 += (price - self.ma50)/50
+        
+        #self.ma200 += (price - self.ma200)/200
+
+        # momentum 
+        self.ma200 = price*(1/200) + (199/200)* self.ma200
+        self.ma50 = price*(1/50) + (49/50)* self.ma50
+
+        pass
 
 if __name__ == "__main__":
     
     pf = Portfolio()
-    
 
