@@ -15,7 +15,7 @@ In order to run the DataLoader class it is neccessary to download the data from 
 
 ## TODO
 1. Change structure such that we can sell/buy cryptos directly (BTC-ETH)
-	a. rewrite data loader 
-	b. rewrite protfolio
+a. rewrite data loader 
+b. rewrite protfolio
 2. Write Indicatorclass with subclasses (with update and get methods) as different indicators
 3. Visualization: We want to be able to visualize the actions and states of our bot
