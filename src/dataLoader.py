@@ -11,7 +11,7 @@ class DataLoader:
     tz = pytz.timezone('Europe/Berlin')
     url = "https://api.pro.coinbase.com"
 
-    path = "./historical_data/"
+    path = "C:/Users/flori/Contacts/Documents/Git_Repos/JABB/historical_data/"
 
 
     def get_historical_dataAPI(self,date_from,date_to):
@@ -34,13 +34,13 @@ class DataLoader:
         date_from = (date_from - datetime(1970, 1, 1)).total_seconds()
         date_to = (date_to - datetime(1970, 1, 1)).total_seconds()
 
-        if date_from < (datetime(2019, 1, 1) - datetime(1970, 1, 1)).total_seconds():
+        '''if date_from < (datetime(2019, 1, 1) - datetime(1970, 1, 1)).total_seconds():
             print("no data for dates before 2019-01-01")
             return
 
         if date_to > (datetime(2020, 12, 31) - datetime(1970, 1, 1)).total_seconds():
             print("no data for dates after 2020-12-31")
-            return
+            return'''
         
 
         years = [2019,2020]

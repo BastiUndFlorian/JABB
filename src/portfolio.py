@@ -9,51 +9,10 @@ class Portfolio:
 
 	holding = {}
 	# EUR or USD
-	currencys = ["EUR","BTC","ETH","ZEC"]
+	currencys = ["USD","BTC","ETH","ZEC"]
 
 	price = {}
-
-	ma50 = {
-		"EUR":0,
-		"BTC":0,
-		"ETH":0,
-		"LTC":0
-	}
-
-	ma200 = {
-		"EUR":0,
-		"BTC":0,
-		"ETH":0,
-		"LTC":0
-	}
-
-	ma50_cache =  {
-		"EUR":[0] * 50,
-		"BTC":[0] * 50,
-		"ETH":[0] * 50,
-		"LTC":[0] * 50
-	}
-
-	ma200_cache =  {
-		"EUR":[0] * 200,
-		"BTC":[0] * 200,
-		"ETH":[0] * 200,
-		"LTC":[0] * 200
-	}
-
-	ma50_iter = {
-		"EUR":0,
-		"BTC":0,
-		"ETH":0,
-		"LTC":0
-	}
-
-	ma200_iter = {
-		"EUR":0,
-		"BTC":0,
-		"ETH":0,
-		"LTC":0
-	}
+	
 
 	buy_price = 0
 
@@ -63,7 +22,7 @@ class Portfolio:
 
 		self.holding = dict.fromkeys(self.currencys, 0)
 
-		self.holding["EUR"] = init_value
+		self.holding["USD"] = init_value
 
 		for pair in [i + "-" + j for (i,j) in itertools.product(self.currencys, self.currencys) if i != j]:
 			self.price[pair]=None
@@ -132,7 +91,7 @@ class Portfolio:
 		return value
 
 	def get_eur_value(self):
-		return self.holding["EUR"]
+		return self.holding["USD"]
 
 	def run_strategy(self):
 		
