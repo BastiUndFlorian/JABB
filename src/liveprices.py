@@ -120,7 +120,8 @@ class WebSocket():
 	def update_portfolio_price(self, msg):
 		if "product_id" and "price" and "time" in msg:
 			name = msg["product_id"][0:3]
-			portfolio.update_price(name, msg["price"])
+			portfolio.update(name, float(msg["price"]))
+			print(portfolio.get_eur_value(),portfolio.ma50["BTC"],portfolio.ma200["BTC"])
 
 	def on_error(self, e, data=None):
 		self.error = e

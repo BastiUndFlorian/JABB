@@ -1,6 +1,6 @@
 
 import numpy as np
-
+import itertools
 import math
 
 
@@ -60,7 +60,7 @@ class Portfolio:
 	def __init__(self,init_value = 100):
 		print("creating portfolio")
 
-		self.holding = dict.fromkeys(currencys)
+		self.holding = dict.fromkeys(self.currencys)
 
 		self.holding["EUR"] = init_value
 
