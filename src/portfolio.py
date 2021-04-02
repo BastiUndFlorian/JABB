@@ -5,7 +5,7 @@ import math
 
 
 class Portfolio:
-
+    
     holding = {
         "EUR":0,
         "BTC":0,
@@ -79,7 +79,7 @@ class Portfolio:
 
     def buy_in_eur(self,name, amount):
         if self.price[name] is not None  and amount <= self.holding["EUR"]:
-            self.holding[name] += (amount / self.price[name])*0.995
+            self.holding[name] += (amount / self.price[name])* 0.995
             self.holding["EUR"] -= amount
             return True
         else:
@@ -127,13 +127,15 @@ class Portfolio:
 
     def run_strategy(self):
         
-        diff = 0.99
+        diff = 0.97
 
-        if diff*(self.ma50["BTC"]) > self.ma200["BTC"] and (self.price["BTC"]  - self.buy_price) > 0.005*self.price["BTC"]:
+        if diff*(self.ma50["BTC"]) > self.ma200["BTC"]:
             self.sell_in_asset("BTC",self.holding["BTC"])        
         if self.ma50["BTC"] < diff*(self.ma200["BTC"]):
             self.buy_price = self.price["BTC"]
             self.buy_in_eur("BTC",self.holding["EUR"])
+            
+
         pass
 
     def update_moving_average(self,name,price):  
