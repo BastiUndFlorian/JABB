@@ -2,13 +2,14 @@
 import numpy as np
 
 import math
+import itertools
 
 
 class Portfolio:
 
 	holding = {}
-	
-	currencys = ["USD","BTC","ETH","ZEC"]
+	# EUR or USD
+	currencys = ["EUR","BTC","ETH","ZEC"]
 
 	price = {}
 
@@ -60,14 +61,14 @@ class Portfolio:
 	def __init__(self,init_value = 100):
 		print("creating portfolio")
 
-		self.holding = dict.fromkeys(currencys)
+		self.holding = dict.fromkeys(self.currencys, 0)
 
 		self.holding["EUR"] = init_value
 
 		for pair in [i + "-" + j for (i,j) in itertools.product(self.currencys, self.currencys) if i != j]:
 			self.price[pair]=None
 
-		self.phi = 0.995
+		self.fee = 0.995
 
 	def update(self, name, new_price):
 		if not math.isnan(new_price):
@@ -77,11 +78,9 @@ class Portfolio:
 
 	def from_asset_to_asset(self, from_asset: str, to_asset: str, amount: float):
 		# TODO: check if holdings cover the amount
-		price_from_asset = self.price[from_asset]
-		price_to_asset = self.price[to_asset]
-		if self.price[to_asset] is not None:
-			self.holding[to_asset] += (amount / self.price[from_asset + '-' + to_asset]) * self.phi
-			self.holding[from_asset] -= (amount / self.price[to_asset + '-' + from_asset]) * self.phi
+		if self.price[to_asset + '-' + from_asset] is not None:
+			self.holding[to_asset] += (amount * self.price[from_asset + '-' + to_asset]) * self.fee
+			self.holding[from_asset] -= amount 
 			return True
 		else:
 			return False
@@ -117,6 +116,7 @@ class Portfolio:
 			return True
 		else: 
 			return False
+			
 	def update_price(self, name, new_price):
 		self.price[name] = new_price
 		pass
@@ -134,16 +134,16 @@ class Portfolio:
 	def get_eur_value(self):
 		return self.holding["EUR"]
 
-    def run_strategy(self):
-        
-        diff = 0.97
+	def run_strategy(self):
+		
+		diff = 0.97
 
-        if diff*(self.ma50["BTC"]) > self.ma200["BTC"]:
-            self.sell_in_asset("BTC",self.holding["BTC"])        
-        if self.ma50["BTC"] < diff*(self.ma200["BTC"]):
-            self.buy_price = self.price["BTC"]
-            self.buy_in_eur("BTC",self.holding["EUR"])
-        pass
+		if diff*(self.ma50["BTC"]) > self.ma200["BTC"]:
+			self.sell_in_asset("BTC",self.holding["BTC"])        
+		if self.ma50["BTC"] < diff*(self.ma200["BTC"]):
+			self.buy_price = self.price["BTC"]
+			self.buy_in_eur("BTC",self.holding["EUR"])
+		pass
 
 	def update_moving_average(self,name,price):  
 		
