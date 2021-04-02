@@ -1,59 +1,74 @@
 import numpy as np
-
 import requests
-import json
-
-from datetime import datetime, timedelta,date
+from datetime import datetime
 import pytz
-
-import os
 import pandas as pd
+import itertools
 
-from portfolio import Portfolio
 
 
 class DataLoader:
-    tz = pytz.timezone('Europe/Berlin')
-    url = "https://api.pro.coinbase.com"
+	tz = pytz.timezone('Europe/Berlin')
+	url = "https://api.pro.coinbase.com"
 
-    path = "./historical_data/"
-
-
-    def get_historical_dataAPI(self,date_from,date_to):
-
-        res = []
-        date_from = (date_from - datetime(1970, 1, 1)).total_seconds()
-        date_to = (date_to - datetime(1970, 1, 1)).total_seconds()
-        for i in range(int(date_from),int(date_to),18000):
-
-            response = requests.get(self.url + "/products/BTC-EUR/candles",params={"start": datetime.fromtimestamp(i, self.tz).isoformat(),"end": datetime.fromtimestamp(i+ 18000, self.tz).isoformat(), "granularity":60})
-            # time, low, high, open, close, volume
-            res += response.json()
-
-        return res
+	path = "./historical_data/"
 
 
-    def load_data(self):
-        
-        res = pd.DataFrame(columns=["Unix Timestamp","Open","High","Low","Close","Volume"])
-        filenames = [filename for filename in os.listdir(self.path) if filename.endswith('csv')]
+	def get_historical_dataAPI(self,date_from,date_to):
 
-        for filename in filenames:
-            data_tmp = pd.read_csv(self.path + filename)[["Unix Timestamp","Open","High","Low","Close","Volume"]]
+		res = []
+		date_from = (date_from - datetime(1970, 1, 1)).total_seconds()
+		date_to = (date_to - datetime(1970, 1, 1)).total_seconds()
+		for i in range(int(date_from),int(date_to),18000):
 
-            data_tmp = data_tmp.reindex(index=data_tmp.index[::-1])
+			response = requests.get(self.url + "/products/BTC-EUR/candles",params={"start": datetime.fromtimestamp(i, self.tz).isoformat(),"end": datetime.fromtimestamp(i+ 18000, self.tz).isoformat(), "granularity":60})
+			# time, low, high, open, close, volume
+			print(response.json())
+			res += list(response.json()).reverse() # todo reverse not working
 
-            res = res.append(data_tmp)
+		return res
 
-        return res.to_numpy()
+	def load_data(self,date_from,date_to):
+
+
+		date_from = (date_from - datetime(1970, 1, 1)).total_seconds()
+		date_to = (date_to - datetime(1970, 1, 1)).total_seconds()
+
+		if date_from < (datetime(2019, 1, 1) - datetime(1970, 1, 1)).total_seconds():
+			print()
+		
+
+		years = [2019,2020]
+		currencys = ["USD","BTC","ETH","ZEC"]
+
+		print([i + "-" + j for (i,j) in itertools.product(currencys,currencys) if i != j])
+
+		df = pd.DataFrame(columns=["Unix Timestamp"])
+
+		for i in range(0,len(currencys)):
+			for j in range(0,len(currencys)):
+				if j < i:
+					df_tmp = pd.DataFrame(columns=["Unix Timestamp",currencys[i]+ "-" +  currencys[j] + "-Close"])
+					for year in years:
+						
+						print("loading gemini_" + currencys[i] + currencys[j] + "_" + str(year) + "_1min.csv")
+						data_tmp = pd.read_csv(self.path + "gemini_" + currencys[i] + currencys[j] + "_" + str(year) + "_1min.csv",skiprows=1)[["Unix Timestamp","Close"]]
+						data_tmp = data_tmp.rename(columns={"Close":currencys[i]+ "-" +  currencys[j] + "-Close"})
+						data_tmp[currencys[j]+ "-" +  currencys[i] + "-Close"] = 1/data_tmp[currencys[i]+ "-" +  currencys[j] + "-Close"]
+						data_tmp = data_tmp.reindex(index=data_tmp.index[::-1])
+						df_tmp = df_tmp.append(data_tmp)
+					if df.empty:
+						df = df_tmp
+					else:
+						df = df.join(df_tmp.set_index('Unix Timestamp'), lsuffix='', rsuffix='_other',on="Unix Timestamp")
+
+		return np.array(df)
+
+
+
 
 if __name__ == "__main__":
-    dl = DataLoader()
-    pf = Portfolio()
-
-    for stick in dl.load_data():
-
-        pf.update("BTC",stick[4])
-        if pf.ma50["BTC"] is None:
-            break
-        print(datetime.utcfromtimestamp(int(stick[0])).strftime('%Y-%m-%d %H:%M:%S'),pf.get_portfolio_value(),pf.ma50["BTC"],pf.ma200["BTC"])
+	dl = DataLoader()
+	res = dl.load_data_full()
+	print(res)
+	

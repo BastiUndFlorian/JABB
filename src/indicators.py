@@ -4,6 +4,25 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 mpl.style.use('seaborn')
 
+
+
+class MovingAverage():
+
+	def __init__(self, window_size: int = 20):
+		self._window_size = window_size
+		self.window = [0]*self._window_size
+		self._iter = 0
+		self.ma = 0
+
+	def update(self, price):
+		self.ma += (price - self.window[self._iter])/self._window_size
+		self.window[self._iter] = price
+		self._iter = (self._iter + 1) % self._window_size
+		pass
+	def get(self):
+		return self.ma
+
+
 class RSIIndicator():
 	'''
 	The relative strength index (RSI) is a momentum indicator 
@@ -18,6 +37,8 @@ class RSIIndicator():
 		self._calculate_rsi()
 
 	def _calculate_rsi(self):
+		diff = self.window[self._iter] - self.price
+		
 		diff = self._close.diff(1)
 		up_direction = diff.where(diff > 0, 0.0)
 		down_direction = -diff.where(diff < 0, 0.0)
