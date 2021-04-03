@@ -24,8 +24,9 @@ class Portfolio:
 
 		self.holding["USD"] = init_value
 
-		for pair in [i + "-" + j for (i,j) in itertools.product(self.currencys, self.currencys) if i != j]:
-			self.price[pair]=None
+		for pair in [i + "-" + j for (i,j) in itertools.product(self.currencys, self.currencys)]:
+			self.price[pair]=0
+		self.price["USD-USD"]=1
 
 		self.fee = 0.995
 
@@ -36,8 +37,7 @@ class Portfolio:
 			self.run_strategy()
 
 	def from_asset_to_asset(self, from_asset: str, to_asset: str, amount: float):
-		# TODO: check if holdings cover the amount
-		if self.price[to_asset + '-' + from_asset] is not None:
+		if self.price[to_asset + '-' + from_asset] is not None and self.holding[from_asset] >= amount :
 			self.holding[to_asset] += (amount * self.price[from_asset + '-' + to_asset]) * self.fee
 			self.holding[from_asset] -= amount 
 			return True
@@ -86,8 +86,8 @@ class Portfolio:
 	def get_portfolio_value(self):
 		value = 0
 		for asset in self.holding.keys():
-			if self.price[asset] is not None:
-				value += self.holding[asset] * self.price[asset]
+			if self.price[asset+"-USD"] is not None:
+				value += self.holding[asset] * self.price[asset+"-USD"]
 		return value
 
 	def get_eur_value(self):
