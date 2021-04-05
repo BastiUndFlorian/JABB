@@ -5,6 +5,8 @@ import pytz
 import pandas as pd
 import itertools
 
+from requests.models import requote_uri
+
 
 
 class DataLoader:
@@ -12,6 +14,10 @@ class DataLoader:
     url = "https://api.pro.coinbase.com"
 
     path = "C:/Users/flori/Contacts/Documents/Git_Repos/JABB/historical_data/"
+
+    def __init__(self,load_csv= True):
+        if load_csv:
+            self.data = self.load_data_all()
 
 
     def get_historical_dataAPI(self,date_from,date_to):
@@ -28,21 +34,7 @@ class DataLoader:
 
         return res
 
-    def load_data(self,date_from,date_to):
-
-
-        date_from = (date_from - datetime(1970, 1, 1)).total_seconds()
-        date_to = (date_to - datetime(1970, 1, 1)).total_seconds()
-
-        '''if date_from < (datetime(2019, 1, 1) - datetime(1970, 1, 1)).total_seconds():
-            print("no data for dates before 2019-01-01")
-            return
-
-        if date_to > (datetime(2020, 12, 31) - datetime(1970, 1, 1)).total_seconds():
-            print("no data for dates after 2020-12-31")
-            return'''
-        
-
+    def load_data_all(self):
         years = [2019,2020]
         currencys = ["USD","BTC","ETH","ZEC"]
 
@@ -68,12 +60,18 @@ class DataLoader:
                         df = df.join(df_tmp.set_index('Unix Timestamp'), lsuffix='', rsuffix='_other',on="Unix Timestamp")
 
         df['Unix Timestamp'] = df['Unix Timestamp'] // 1000
-        df = df[df['Unix Timestamp'] >= date_from]
-        df = df[df['Unix Timestamp'] <= date_to]
         return df
 
+    def load_data(self,date_from,date_to):
 
+        date_from = (date_from - datetime(1970, 1, 1)).total_seconds()
+        date_to = (date_to - datetime(1970, 1, 1)).total_seconds()
 
+        df_temp = self.data
+        df_temp = df_temp[df_temp['Unix Timestamp'] >= date_from]
+        df_temp = df_temp[df_temp['Unix Timestamp'] <= date_to]
+
+        return df_temp
 
 if __name__ == "__main__":
     dl = DataLoader()
