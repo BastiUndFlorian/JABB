@@ -2,7 +2,6 @@
 import numpy as np
 import itertools
 import math
-import itertools
 
 
 class Portfolio:
@@ -28,8 +27,8 @@ class Portfolio:
 	def update(self, name, new_price):
 		if not math.isnan(new_price):
 			self.update_price(name, new_price)
-			self.update_moving_average(name,new_price)
-			self.run_strategy()
+			# self.update_moving_average(name,new_price)
+			# self.run_strategy()
 
 	def from_asset_to_asset(self, from_asset: str, to_asset: str, amount: float):
 		if self.prices[to_asset + '-' + from_asset] is not None and self.holding[from_asset] >= amount :
@@ -52,10 +51,5 @@ class Portfolio:
 			if self.prices[asset + "-" + self.default_currency] is not None:
 				value += self.holding[asset] * self.prices[asset + "-" + self.default_currency]
 		return value
-
-
-if __name__ == "__main__":
-	
-	pf = Portfolio()
 
 

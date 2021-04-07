@@ -19,6 +19,7 @@ class MovingAverage():
 		self.window[self._iter] = price
 		self._iter = (self._iter + 1) % self._window_size
 		pass
+		
 	def get(self):
 		return self.ma
 

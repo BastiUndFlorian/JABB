@@ -13,7 +13,7 @@ class DataLoader:
     tz = pytz.timezone('Europe/Berlin')
     url = "https://api.pro.coinbase.com"
 
-    path = "C:/Users/flori/Contacts/Documents/Git_Repos/JABB/historical_data/"
+    path = "C:\\Users\\spatz\\OneDrive\\Documents\\Projects\\Python Stuff\\Trading\\data\\"
 
     def __init__(self,load_csv= True):
         if load_csv:
