@@ -76,6 +76,7 @@ class WebSocket():
 
 	def _listen(self):
 		self.keepalive.start()
+		count = 0
 		while not self.stop:
 			try:
 				data = self.ws.recv()
@@ -85,9 +86,7 @@ class WebSocket():
 			except Exception as e:
 				self.on_error(e)
 			else:
-				self.on_message(msg)
-				self.update_portfolio_price(msg)
-
+				self.on_data(msg)
 
 	def _disconnect(self):
 		try:
@@ -113,15 +112,8 @@ class WebSocket():
 		if self.should_print:
 			print("-- Socket Closed! --")
 
-	def on_message(self, msg):
-		if self.should_print:
-			print(msg)
-
-	def update_portfolio_price(self, msg):
-		if "product_id" and "price" and "time" in msg:
-			name = msg["product_id"][0:3]
-			portfolio.update(name, float(msg["price"]))
-			print(portfolio.get_eur_value(),portfolio.ma50["BTC"],portfolio.ma200["BTC"])
+	def on_data(self, msg):
+		pass
 
 	def on_error(self, e, data=None):
 		self.error = e
@@ -140,19 +132,3 @@ class WebSocket():
 		self.keepalive = Thread(target=self._keepalive)
 		self.thread.start()
 
-if __name__ == '__main__':
-	portfolio = Portfolio()
-	wsClient = WebSocket(products=["BTC-EUR"], channels=["ticker"], portfolio=portfolio)
-	wsClient.start()
-	print(wsClient.url, wsClient.products)
-	try:
-		while True:
-			print(wsClient.data)
-			time.sleep(1)
-	except KeyboardInterrupt:
-		wsClient.close()
-		
-	if wsClient.error:
-		sys.exit(1)
-	else:
-		sys.exit(0)

@@ -51,7 +51,7 @@ class DataLoader:
                         print("loading gemini_" + currencys[i] + currencys[j] + "_" + str(year) + "_1min.csv")
                         data_tmp = pd.read_csv(self.path + "gemini_" + currencys[i] + currencys[j] + "_" + str(year) + "_1min.csv",skiprows=1)[["Unix Timestamp","Close"]]
                         data_tmp = data_tmp.rename(columns={"Close":currencys[i]+ "-" +  currencys[j] + "-Close"})
-                        data_tmp[currencys[j]+ "-" +  currencys[i] + "-Close"] = 1/data_tmp[currencys[i]+ "-" +  currencys[j] + "-Close"]
+                        data_tmp[currencys[j]+ "-" +  currencys[i] + "-Close"] = round(1/data_tmp[currencys[i]+ "-" +  currencys[j] + "-Close"], 8)
                         data_tmp = data_tmp.reindex(index=data_tmp.index[::-1])
                         df_tmp = df_tmp.append(data_tmp)
                     if df.empty:

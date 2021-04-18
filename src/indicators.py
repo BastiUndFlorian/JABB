@@ -1,27 +1,61 @@
 import numpy as np 
 import pandas as pd 
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-mpl.style.use('seaborn')
 
 
-
-class MovingAverage():
+class SimpleMovingAverage():
 
 	def __init__(self, window_size: int = 20):
 		self._window_size = window_size
 		self.window = [0]*self._window_size
 		self._iter = 0
-		self.ma = 0
+		self.sma = 0
 
-	def update(self, price):
-		self.ma += (price - self.window[self._iter])/self._window_size
+	def update(self, price: float):
+		self.sma += (price - self.window[self._iter])/self._window_size
 		self.window[self._iter] = price
 		self._iter = (self._iter + 1) % self._window_size
 		pass
 		
 	def get(self):
-		return self.ma
+		return self.sma
+
+	# def calculate_from_data(self, data: pd.DataFrame):
+	# 	if data is None:
+	# 		raise Exception("Error, no data was passed")
+	# 	elif isinstance(data, pd.DataFrame):
+	# 		raise Exception("Error, data is not pandas DataFrame. Type was " + str(type(data)))
+
+	# 	result = pd.DataFrame(columns=["Unix Timestamp"])
+	# 	result["Unix Timestamp"] = data["Unix Timestamp"]
+
+	# 	for column in data:
+	# 		if "Close" in column:
+	# 			result[column] = data[column].rolling(window=_window_size).mean()
+
+
+	# 	## return only the non nan-values
+	# 	return result.dropna()
+
+
+class ExponentialMovingAverage():
+
+	def __init__(self, window_size: int = 20):
+		self._window_size = window_size
+		self.window = [0]*self._window_size
+		self._iter = 0
+		self.ema = 0
+
+	def update(self, price):
+		if self._iter < self._window_size:
+			self.ema += price/self._window_size
+			self._iter += 1
+		else:
+			self.ema += (2/(self._window_size + 1)) * (price - self.ema) 
+		pass
+		
+	def get(self):
+		return self.ema
+
 
 
 class RSIIndicator():
@@ -80,21 +114,6 @@ class BollingerBands():
 		self._hband = self._mavg + self._window_dev * self._mstd
 		self._lband = self._mavg - self._window_dev * self._mstd
 	
-### This is all just Visualization needs to be somewhere else
-if __name__ == '__main__':
-	path = ""
-	data = pd.read_csv(path, index_col=0)
-	data = data[::-1]
 
-	RSI = RSIIndicator(data["Close"], window=14*24*60)
-	Bollinger = BollingerBands(data["Close"], window=14*24*60)
-
-	plt.plot(data["Close"])
-	#plt.plot(RSI._rsi, label="RSI Indicator")
-	plt.plot(Bollinger._hband, label="Upper Band")
-	plt.plot(Bollinger._lband, label="Lower Band")
-	plt.plot()
-	plt.legend()
-	plt.show()
 
 
