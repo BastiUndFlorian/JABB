@@ -32,6 +32,9 @@ class Runner:
 				if count >= self.warmup_len:
 					self.strategy.trade(timestamp)
 				count += 1
+			print("Portfolio overall value:")
+			print(self.portfolio.get_portfolio_value())
+			print("\n")
 
 
 

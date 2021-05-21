@@ -2,7 +2,7 @@ import numpy as np
 import itertools
 import re
 
-from indicators import SimpleMovingAverage
+from indicators import SimpleMovingAverage, ExponentialMovingAverage
 from portfolio import Portfolio
 
 class MovingAverageStrategy:
@@ -21,7 +21,7 @@ class MovingAverageStrategy:
 	def __init_indicators(self):
 		indicator_dict = {}
 		for product_id in self.product_ids:
-			indicator_dict[product_id] = [SimpleMovingAverage(50), SimpleMovingAverage(200)]
+			indicator_dict[product_id] = [ExponentialMovingAverage(50), ExponentialMovingAverage(200)]
 		print(indicator_dict)
 		return indicator_dict
 
