@@ -2,7 +2,7 @@ import itertools
 import re
 
 from signals import SimpleMovingAverageSignal
-from strategy.strategy import BaseStrategy
+from strategy import BaseStrategy
 
 
 class MovingAverageStrategy(BaseStrategy):

@@ -35,7 +35,7 @@ class DataLoader:
         return res
 
     def load_data_all(self):
-        years = [2019,2020]
+        years = [2018,2019,2020]
         currencys = ["USD","BTC","ETH","ZEC"]
 
         print([i + "-" + j for (i,j) in itertools.product(currencys,currencys) if i != j])

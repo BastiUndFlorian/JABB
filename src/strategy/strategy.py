@@ -44,8 +44,14 @@ class BaseStrategy:
 					candle = row[product_id + "-Close"]
 					if not math.isnan(candle):
 						self.update(product_id, candle)
-						if count >= warmup_len:
-							self.on_data(timestamp, candle, product_id)
+						# if product_id == "BTC-USD":
+							# print(self.buy_signals[product_id].short_ma.get())
+							# print(self.buy_signals[product_id].long_ma.get())
+							# print("\n")
+				for product_id in self.product_ids:
+					if count >= warmup_len:
+						candle = row[product_id + "-Close"]
+						self.on_data(timestamp, candle, product_id)
 				count += 1
 		else:
 			pass
@@ -72,7 +78,7 @@ class BaseStrategy:
 
 	def buy(self, tme_stamp, candle, selling_asset, buying_asset, amount):
 		"""buy function"""
-		if self.portfolio.holding[selling_asset] >= amount:
+		if self.portfolio.holding[selling_asset] > 0:
 			#print("Opening position")
 			# self.positions.append()
 			print("****************************")
@@ -85,6 +91,10 @@ class BaseStrategy:
 			print(self.portfolio.get_assets())
 			print("\n")
 			print("Portfolio overall value:")
-			print(self.get_value())
+			print(self.portfolio.get_portfolio_value())
 			print("\n")	
+			print(self.buy_signals[product_id].short_ma.get())
+			print(self.buy_signals[product_id].long_ma.get())
+			print("\n")
+
 	
